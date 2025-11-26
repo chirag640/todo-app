@@ -1,0 +1,37 @@
+version: 1
+app_name: "todo_app"
+platforms:
+  - "mobile"
+state_management: "bloc"
+ci_provider: "none"
+analytics_provider: "none"
+security_level: "none"
+memory_level: "none"
+max_image_cache_size: 100
+riverpod_level: "none"
+enable_code_generation: false
+localization_level: "none"
+supported_locales:
+  - "en"
+  - "es"
+default_locale: "en"
+enable_rtl: false
+auth_level: "none"
+enable_jwt: false
+enable_oauth: false
+enable_biometric: false
+enable_refresh_token: true
+offline_level: "basic"
+enable_sync_queue: false
+enable_background_sync: false
+enable_conflict_resolution: false
+sync_interval: 60
+features:
+  analytics: false
+  api: true
+  env: true
+  hive: true
+  localization: false
+  pagination: true
+  tests: true
+  theme: true

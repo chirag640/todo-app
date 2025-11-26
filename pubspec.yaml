@@ -1,0 +1,36 @@
+name: todo_app
+description: "A Flutter app scaffolded by flutter_blueprint with BLoC."
+publish_to: "none"
+
+version: 0.1.0+1
+
+environment:
+  sdk: ">=3.3.0 <4.0.0"
+  flutter: ">=3.24.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_bloc: ^8.1.6
+  bloc: ^8.1.4
+  shared_preferences: ^2.2.3
+  flutter_secure_storage: ^9.2.2
+  equatable: ^2.0.5
+  flutter_dotenv: ^5.1.0
+  dio: ^5.5.0
+  connectivity_plus: ^6.0.5
+  pretty_dio_logger: ^1.4.0
+  hive: ^2.2.3
+  hive_flutter: ^1.1.0
+  path_provider: ^2.1.5
+  sizer: ^2.0.15
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0
+  mocktail: ^1.0.3
+  bloc_test: ^9.1.7
+
+flutter:
+  uses-material-design: true
