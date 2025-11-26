@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sizer/sizer.dart';
 import '../core/routing/app_router.dart';
+import '../core/theme/app_theme.dart';
 import '../features/home/presentation/bloc/home_bloc.dart';
 
 class App extends StatelessWidget {
@@ -21,9 +22,10 @@ class App extends StatelessWidget {
             // Add more BLoCs here
           ],
           child: MaterialApp(
-            title: 'Todo App',
+            title: 'Todo',
             debugShowCheckedModeBanner: false,
-            initialRoute: AppRouter.home,
+            theme: AppTheme.light(),
+            initialRoute: AppRouter.splash,
             onGenerateRoute: router.onGenerateRoute,
           ),
         );
