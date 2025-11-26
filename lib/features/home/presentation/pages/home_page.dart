@@ -5,6 +5,7 @@ import '../widgets/task_card.dart';
 import '../widgets/filter_button.dart';
 import '../widgets/filter_bottom_sheet.dart';
 import 'new_task_page.dart';
+import 'task_details_page.dart';
 
 /// Home page - My Tasks screen
 class HomePage extends StatefulWidget {
@@ -28,24 +29,33 @@ class _HomePageState extends State<HomePage> {
       'dueDate': 'Tomorrow',
       'priority': 'high',
       'isCompleted': false,
+      'description':
+          'Create high-fidelity mockups for the mobile app including all main screens and user flows. Include dark mode variations.',
+      'category': 'Project Alpha',
     },
     {
       'title': 'Develop login feature',
       'dueDate': 'Oct 25',
       'priority': 'medium',
       'isCompleted': true,
+      'description':
+          'Implement user authentication with email and social login options. Include forgot password functionality.',
     },
     {
       'title': 'Submit weekly report',
       'dueDate': 'Friday',
       'priority': 'low',
       'isCompleted': false,
+      'description':
+          'Prepare and submit the weekly progress report to the management team.',
     },
     {
       'title': 'Fix API authentication bug',
       'dueDate': 'Today',
       'priority': 'high',
       'isCompleted': false,
+      'description':
+          'Debug and fix the token refresh issue that causes users to be logged out unexpectedly.',
     },
     {
       'title': 'Water the plants',
@@ -134,6 +144,27 @@ class _HomePageState extends State<HomePage> {
       ];
       return '${months[date.month - 1]} ${date.day}';
     }
+  }
+
+  Future<void> _navigateToTaskDetails(int index) async {
+    await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => TaskDetailsPage(
+          task: _tasks[index],
+          onUpdate: (updatedTask) {
+            setState(() {
+              _tasks[index] = updatedTask;
+            });
+          },
+          onDelete: () {
+            setState(() {
+              _tasks.removeAt(index);
+            });
+          },
+        ),
+      ),
+    );
   }
 
   @override
@@ -249,9 +280,7 @@ class _HomePageState extends State<HomePage> {
                         priority: task['priority'],
                         isCompleted: task['isCompleted'],
                         onToggle: () => _toggleTaskComplete(index),
-                        onTap: () {
-                          // TODO: Navigate to task details
-                        },
+                        onTap: () => _navigateToTaskDetails(index),
                       ),
                     );
                   },
