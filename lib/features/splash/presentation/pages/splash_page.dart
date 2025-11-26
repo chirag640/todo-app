@@ -43,10 +43,11 @@ class _SplashPageState extends State<SplashPage>
 
     _controller.forward();
 
-    // Navigate to home after delay
+    // Navigate to login after delay
+    // TODO: Check if user is logged in, then navigate to home, else login
     Future.delayed(const Duration(seconds: 3), () {
       if (mounted) {
-        Navigator.of(context).pushReplacementNamed(AppRouter.home);
+        Navigator.of(context).pushReplacementNamed(AppRouter.login);
       }
     });
   }

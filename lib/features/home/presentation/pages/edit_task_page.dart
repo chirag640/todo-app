@@ -2,24 +2,69 @@ import 'package:flutter/material.dart';
 import 'package:sizer/sizer.dart';
 import '../../../../core/theme/app_colors.dart';
 
-class NewTaskPage extends StatefulWidget {
-  const NewTaskPage({super.key});
+class EditTaskPage extends StatefulWidget {
+  final Map<String, dynamic> task;
+
+  const EditTaskPage({
+    Key? key,
+    required this.task,
+  }) : super(key: key);
 
   @override
-  State<NewTaskPage> createState() => _NewTaskPageState();
+  State<EditTaskPage> createState() => _EditTaskPageState();
 }
 
-class _NewTaskPageState extends State<NewTaskPage> {
+class _EditTaskPageState extends State<EditTaskPage> {
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
   String _selectedPriority = 'medium';
   DateTime? _selectedDate;
 
   @override
+  void initState() {
+    super.initState();
+    // Pre-populate fields with existing task data
+    _titleController.text = widget.task['title'] ?? '';
+    _descriptionController.text = widget.task['description'] ?? '';
+    _selectedPriority = widget.task['priority'] ?? 'medium';
+    if (widget.task['dueDate'] != null) {
+      _selectedDate = DateTime.parse(widget.task['dueDate']);
+    }
+  }
+
+  @override
   void dispose() {
     _titleController.dispose();
     _descriptionController.dispose();
     super.dispose();
+  }
+
+  void _saveTask() {
+    if (_titleController.text.trim().isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Please enter a task title'),
+          backgroundColor: AppColors.error,
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+        ),
+      );
+      return;
+    }
+
+    final updatedTask = {
+      'id': widget.task['id'],
+      'title': _titleController.text.trim(),
+      'description': _descriptionController.text.trim(),
+      'priority': _selectedPriority,
+      'dueDate': _selectedDate?.toIso8601String(),
+      'isCompleted': widget.task['isCompleted'],
+      'category': widget.task['category'],
+    };
+
+    Navigator.pop(context, updatedTask);
   }
 
   Future<void> _selectDate(BuildContext context) async {
@@ -64,30 +109,6 @@ class _NewTaskPageState extends State<NewTaskPage> {
       'Dec'
     ];
     return '${months[date.month - 1]} ${date.day}, ${date.year}';
-  }
-
-  void _saveTask() {
-    if (_titleController.text.trim().isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Please enter a task title'),
-          backgroundColor: AppColors.error,
-          behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
-          ),
-        ),
-      );
-      return;
-    }
-
-    // Return task data to previous screen
-    Navigator.pop(context, {
-      'title': _titleController.text.trim(),
-      'description': _descriptionController.text.trim(),
-      'priority': _selectedPriority,
-      'dueDate': _selectedDate,
-    });
   }
 
   @override
@@ -147,7 +168,7 @@ class _NewTaskPageState extends State<NewTaskPage> {
                       ),
                     ),
                     Text(
-                      'New Task',
+                      'Edit Task',
                       style: TextStyle(
                         fontSize: 20.sp,
                         fontWeight: FontWeight.bold,

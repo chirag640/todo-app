@@ -54,9 +54,16 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
       decoration: BoxDecoration(
         color: AppColors.white,
         borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(24.sp),
-          topRight: Radius.circular(24.sp),
+          topLeft: Radius.circular(30),
+          topRight: Radius.circular(30),
         ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.1),
+            blurRadius: 20,
+            offset: Offset(0, -5),
+          ),
+        ],
       ),
       child: SafeArea(
         child: Column(
@@ -64,9 +71,9 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
           children: [
             // Handle bar
             Container(
-              margin: EdgeInsets.only(top: 2.h),
-              width: 10.w,
-              height: 0.5.h,
+              margin: EdgeInsets.only(top: 1.5.h),
+              width: 12.w,
+              height: 0.6.h,
               decoration: BoxDecoration(
                 color: AppColors.divider,
                 borderRadius: BorderRadius.circular(10),
@@ -75,16 +82,17 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
 
             // Header
             Padding(
-              padding: EdgeInsets.symmetric(horizontal: 6.w, vertical: .2.h),
+              padding: EdgeInsets.symmetric(horizontal: 6.w, vertical: 2.h),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    'Filter & Sort By',
+                    'Filter & Sort',
                     style: TextStyle(
-                      fontSize: 14.sp,
+                      fontSize: 18.sp,
                       fontWeight: FontWeight.bold,
                       color: AppColors.textPrimary,
+                      letterSpacing: 0.3,
                     ),
                   ),
                   TextButton(
@@ -94,6 +102,16 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
                         _selectedPriorities = ['all'];
                       });
                     },
+                    style: TextButton.styleFrom(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 3.w,
+                        vertical: 0.8.h,
+                      ),
+                      backgroundColor: AppColors.primary.withOpacity(0.1),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                    ),
                     child: Text(
                       'Reset',
                       style: TextStyle(
@@ -187,16 +205,22 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
           });
         },
         child: Container(
-          padding: EdgeInsets.symmetric(vertical: 1.h),
+          padding: EdgeInsets.symmetric(vertical: 1.2.h),
           decoration: BoxDecoration(
-            color: isSelected ? AppColors.white : AppColors.background,
-            borderRadius: BorderRadius.circular(12.sp),
+            color: isSelected ? AppColors.primary : AppColors.background,
+            borderRadius: BorderRadius.circular(14),
+            border: isSelected
+                ? Border.all(
+                    color: AppColors.primary,
+                    width: 1.5,
+                  )
+                : null,
             boxShadow: isSelected
                 ? [
                     BoxShadow(
-                      color: AppColors.shadow,
-                      blurRadius: 4,
-                      offset: const Offset(0, 1),
+                      color: AppColors.primary.withOpacity(0.3),
+                      blurRadius: 8,
+                      offset: const Offset(0, 2),
                     ),
                   ]
                 : null,
@@ -205,11 +229,9 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
             child: Text(
               label,
               style: TextStyle(
-                fontSize: 11.sp,
-                fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
-                color: isSelected
-                    ? AppColors.textPrimary
-                    : AppColors.textSecondary,
+                fontSize: 12.sp,
+                fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
+                color: isSelected ? AppColors.white : AppColors.textSecondary,
               ),
             ),
           ),

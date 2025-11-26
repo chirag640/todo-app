@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:sizer/sizer.dart';
 import '../../../../core/theme/app_colors.dart';
+import 'edit_task_page.dart';
 
 class TaskDetailsPage extends StatefulWidget {
   final Map<String, dynamic> task;
@@ -130,12 +131,17 @@ class _TaskDetailsPageState extends State<TaskDetailsPage> {
                   expandedHeight: 15.h,
                   floating: false,
                   pinned: true,
-                  backgroundColor: AppColors.primary,
+                  backgroundColor: Colors.transparent,
+                  elevation: 0,
                   leading: Container(
                     margin: EdgeInsets.only(left: 3.w, top: 0.5.h),
                     decoration: BoxDecoration(
                       color: Colors.white.withOpacity(0.2),
                       shape: BoxShape.circle,
+                      border: Border.all(
+                        color: Colors.white.withOpacity(0.3),
+                        width: 1.5,
+                      ),
                     ),
                     child: IconButton(
                       icon: Icon(
@@ -147,64 +153,87 @@ class _TaskDetailsPageState extends State<TaskDetailsPage> {
                       padding: EdgeInsets.zero,
                     ),
                   ),
-                  flexibleSpace: FlexibleSpaceBar(
-                    background: Container(
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                          colors: [
-                            AppColors.primary,
-                            AppColors.primaryDark,
-                          ],
-                        ),
-                      ),
-                      child: SafeArea(
-                        child: Padding(
-                          padding: EdgeInsets.fromLTRB(6.w, 6.h, 6.w, 2.h),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisAlignment: MainAxisAlignment.end,
-                            children: [
-                              if (widget.task['category'] != null)
-                                Container(
-                                  padding: EdgeInsets.symmetric(
-                                    horizontal: 2.5.w,
-                                    vertical: 0.4.h,
-                                  ),
-                                  decoration: BoxDecoration(
-                                    color: Colors.white.withOpacity(0.2),
-                                    borderRadius: BorderRadius.circular(20),
-                                  ),
-                                  child: Text(
-                                    widget.task['category']
-                                        .toString()
-                                        .toUpperCase(),
-                                    style: TextStyle(
-                                      fontSize: 9.sp,
-                                      fontWeight: FontWeight.w600,
-                                      color: AppColors.white,
-                                      letterSpacing: 0.8,
-                                    ),
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                ),
-                              SizedBox(height: 0.8.h),
-                              Text(
-                                widget.task['title'] ?? '',
-                                style: TextStyle(
-                                  fontSize: 16.sp,
-                                  fontWeight: FontWeight.bold,
-                                  color: AppColors.white,
-                                  height: 1.2,
-                                ),
-                                maxLines: 2,
-                                overflow: TextOverflow.ellipsis,
-                              ),
+                  flexibleSpace: ClipRRect(
+                    borderRadius: BorderRadius.only(
+                      bottomLeft: Radius.circular(30),
+                      bottomRight: Radius.circular(30),
+                    ),
+                    child: FlexibleSpaceBar(
+                      background: Container(
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                            colors: [
+                              AppColors.primary,
+                              AppColors.primaryDark,
                             ],
                           ),
                         ),
+                        child: SafeArea(
+                          child: Padding(
+                            padding: EdgeInsets.fromLTRB(6.w, 6.h, 6.w, 2.h),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: [
+                                if (widget.task['category'] != null)
+                                  Container(
+                                    padding: EdgeInsets.symmetric(
+                                      horizontal: 2.5.w,
+                                      vertical: 0.4.h,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: Colors.white.withOpacity(0.2),
+                                      borderRadius: BorderRadius.circular(20),
+                                    ),
+                                    child: Text(
+                                      widget.task['category']
+                                          .toString()
+                                          .toUpperCase(),
+                                      style: TextStyle(
+                                        fontSize: 9.sp,
+                                        fontWeight: FontWeight.w600,
+                                        color: AppColors.white,
+                                        letterSpacing: 0.8,
+                                      ),
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ),
+                                SizedBox(height: 0.8.h),
+                                Text(
+                                  widget.task['title'] ?? '',
+                                  style: TextStyle(
+                                    fontSize: 16.sp,
+                                    fontWeight: FontWeight.bold,
+                                    color: AppColors.white,
+                                    height: 1.2,
+                                  ),
+                                  maxLines: 2,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+
+                // Shadow separator
+                SliverToBoxAdapter(
+                  child: Container(
+                    height: 2.h,
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        colors: [
+                          AppColors.primary.withOpacity(0.15),
+                          Colors.transparent,
+                        ],
                       ),
                     ),
                   ),
@@ -442,18 +471,19 @@ class _TaskDetailsPageState extends State<TaskDetailsPage> {
                         child: Material(
                           color: Colors.transparent,
                           child: InkWell(
-                            onTap: () {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  content:
-                                      Text('Edit functionality coming soon'),
-                                  backgroundColor: AppColors.info,
-                                  behavior: SnackBarBehavior.floating,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(12),
+                            onTap: () async {
+                              final result = await Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => EditTaskPage(
+                                    task: widget.task,
                                   ),
                                 ),
                               );
+                              if (result != null) {
+                                widget.onUpdate(result);
+                                Navigator.pop(context, result);
+                              }
                             },
                             borderRadius: BorderRadius.circular(16),
                             child: Center(
