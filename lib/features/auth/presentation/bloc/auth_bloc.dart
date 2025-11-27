@@ -18,6 +18,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<FetchProfileEvent>(_onFetchProfile);
     on<RequestPasswordResetEvent>(_onRequestPasswordReset);
     on<ResetPasswordEvent>(_onResetPassword);
+    on<UpdateProfileEvent>(_onUpdateProfile);
+    on<ChangePasswordEvent>(_onChangePassword);
   }
 
   /// Check if user is already authenticated
@@ -252,6 +254,111 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
       await Future.delayed(const Duration(seconds: 2));
       emit(const AuthUnauthenticated());
+    }
+  }
+
+  /// Handle profile update
+  Future<void> _onUpdateProfile(
+    UpdateProfileEvent event,
+    Emitter<AuthState> emit,
+  ) async {
+    try {
+      final currentUser = _authService.getCurrentUser();
+      if (currentUser == null) {
+        emit(const AuthSessionExpired('Session expired. Please login again.'));
+        return;
+      }
+
+      emit(AuthLoading(message: 'Updating profile...'));
+      AppLogger.info('Updating profile for: ${currentUser.email}', 'AuthBloc');
+
+      final updatedUser = await _authService.updateProfile(
+        firstName: event.firstName,
+        lastName: event.lastName,
+        email: event.email,
+      );
+
+      emit(AuthProfileUpdated(updatedUser, 'Profile updated successfully'));
+      AppLogger.info('Profile updated successfully', 'AuthBloc');
+
+      // Return to authenticated state after showing success
+      await Future.delayed(const Duration(seconds: 2));
+      emit(AuthAuthenticated(updatedUser));
+    } on UnauthorizedFailure catch (e) {
+      AppLogger.error(
+          'Profile update failed (unauthorized): ${e.message}', 'AuthBloc');
+      emit(AuthSessionExpired(e.message));
+    } on Failure catch (e) {
+      AppLogger.error('Profile update failed: ${e.message}', 'AuthBloc');
+      emit(AuthError(e.message));
+
+      // Return to authenticated state with old user data
+      final currentUser = _authService.getCurrentUser();
+      if (currentUser != null) {
+        await Future.delayed(const Duration(seconds: 2));
+        emit(AuthAuthenticated(currentUser));
+      }
+    } catch (e) {
+      AppLogger.error('Unexpected profile update error: $e', 'AuthBloc');
+      emit(const AuthError('Failed to update profile. Please try again.'));
+
+      final currentUser = _authService.getCurrentUser();
+      if (currentUser != null) {
+        await Future.delayed(const Duration(seconds: 2));
+        emit(AuthAuthenticated(currentUser));
+      }
+    }
+  }
+
+  /// Handle password change
+  Future<void> _onChangePassword(
+    ChangePasswordEvent event,
+    Emitter<AuthState> emit,
+  ) async {
+    try {
+      final currentUser = _authService.getCurrentUser();
+      if (currentUser == null) {
+        emit(const AuthSessionExpired('Session expired. Please login again.'));
+        return;
+      }
+
+      emit(const AuthLoading(message: 'Changing password...'));
+      AppLogger.info('Password change requested', 'AuthBloc');
+
+      await _authService.changePassword(
+        currentPassword: event.currentPassword,
+        newPassword: event.newPassword,
+      );
+
+      emit(const AuthPasswordChanged('Password changed successfully'));
+      AppLogger.info('Password changed successfully', 'AuthBloc');
+
+      // Return to authenticated state after showing success
+      await Future.delayed(const Duration(seconds: 2));
+      emit(AuthAuthenticated(currentUser));
+    } on UnauthorizedFailure catch (e) {
+      AppLogger.error(
+          'Password change failed (unauthorized): ${e.message}', 'AuthBloc');
+      emit(AuthSessionExpired(e.message));
+    } on Failure catch (e) {
+      AppLogger.error('Password change failed: ${e.message}', 'AuthBloc');
+      emit(AuthError(e.message));
+
+      // Return to authenticated state
+      final currentUser = _authService.getCurrentUser();
+      if (currentUser != null) {
+        await Future.delayed(const Duration(seconds: 2));
+        emit(AuthAuthenticated(currentUser));
+      }
+    } catch (e) {
+      AppLogger.error('Unexpected password change error: $e', 'AuthBloc');
+      emit(const AuthError('Failed to change password. Please try again.'));
+
+      final currentUser = _authService.getCurrentUser();
+      if (currentUser != null) {
+        await Future.delayed(const Duration(seconds: 2));
+        emit(AuthAuthenticated(currentUser));
+      }
     }
   }
 }

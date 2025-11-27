@@ -191,7 +191,7 @@ class _LoginPageState extends State<LoginPage> {
 
                           // Email Field
                           Text(
-                            'Email / Username',
+                            'Email',
                             style: TextStyle(
                               fontSize: 12.sp,
                               fontWeight: FontWeight.w600,
@@ -336,22 +336,22 @@ class _LoginPageState extends State<LoginPage> {
                           // Remember Me Checkbox
                           Row(
                             children: [
-                              Checkbox(
-                                value: _rememberMe,
-                                onChanged: (value) {
-                                  setState(() {
-                                    _rememberMe = value ?? true;
-                                  });
-                                },
-                                activeColor: AppColors.primary,
-                              ),
-                              Text(
-                                'Remember me',
-                                style: TextStyle(
-                                  fontSize: 11.sp,
-                                  color: AppColors.textSecondary,
-                                ),
-                              ),
+                              // Checkbox(
+                              //   value: _rememberMe,
+                              //   onChanged: (value) {
+                              //     setState(() {
+                              //       _rememberMe = value ?? true;
+                              //     });
+                              //   },
+                              //   activeColor: AppColors.primary,
+                              // ),
+                              // Text(
+                              //   'Remember me',
+                              //   style: TextStyle(
+                              //     fontSize: 11.sp,
+                              //     color: AppColors.textSecondary,
+                              //   ),
+                              // ),
                               Spacer(),
                               // Forgot Password
                               TextButton(
@@ -364,7 +364,7 @@ class _LoginPageState extends State<LoginPage> {
                                   style: TextStyle(
                                     fontSize: 11.sp,
                                     color: AppColors.textSecondary,
-                                    decoration: TextDecoration.underline,
+                                    // decoration: TextDecoration.underline,
                                   ),
                                 ),
                               ),

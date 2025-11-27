@@ -18,7 +18,20 @@ class AuthInterceptor extends Interceptor {
   ) async {
     final token = _storage.getAccessToken();
 
-    if (token != null && !options.path.contains('/auth/')) {
+    // List of auth endpoints that don't require authentication
+    final publicAuthEndpoints = [
+      '/auth/login',
+      '/auth/register',
+      '/auth/refresh',
+      '/auth/forgot-password',
+      '/auth/reset-password',
+    ];
+
+    // Add token to all requests except public auth endpoints
+    final isPublicEndpoint =
+        publicAuthEndpoints.any((endpoint) => options.path.contains(endpoint));
+
+    if (token != null && !isPublicEndpoint) {
       options.headers['Authorization'] = 'Bearer $token';
       AppLogger.debug(
           'Added auth token to request: ${options.path}', 'AuthInterceptor');
@@ -32,9 +45,21 @@ class AuthInterceptor extends Interceptor {
       DioException err, ErrorInterceptorHandler handler) async {
     final response = err.response;
 
+    // List of protected endpoints that should trigger token refresh on 401
+    final protectedEndpoints = [
+      '/auth/profile',
+      '/auth/change-password',
+      '/auth/logout',
+      '/tasks',
+    ];
+
+    // Only attempt token refresh for 401 on protected endpoints
+    // (not on login/register failures)
+    final isProtectedEndpoint = protectedEndpoints
+        .any((endpoint) => err.requestOptions.path.contains(endpoint));
+
     // Handle 401 Unauthorized - token expired
-    if (response?.statusCode == 401 &&
-        !err.requestOptions.path.contains('/auth/')) {
+    if (response?.statusCode == 401 && isProtectedEndpoint) {
       AppLogger.warning(
           '401 Unauthorized - attempting token refresh', 'AuthInterceptor');
 

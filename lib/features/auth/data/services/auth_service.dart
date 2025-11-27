@@ -258,6 +258,73 @@ class AuthService {
     }
   }
 
+  /// Update user profile
+  Future<UserModel> updateProfile({
+    required String firstName,
+    String? lastName,
+    String? email,
+  }) async {
+    try {
+      AppLogger.info('Updating user profile', 'AuthService');
+
+      final response = await _apiClient.patch(
+        '/auth/profile',
+        data: {
+          'firstName': firstName,
+          if (lastName != null && lastName.isNotEmpty) 'lastName': lastName,
+          if (email != null && email.isNotEmpty) 'email': email,
+        },
+      );
+
+      AppLogger.debug(
+          'Profile update response: ${response.data}', 'AuthService');
+
+      // Extract data from backend response wrapper
+      final responseData = response.data as Map<String, dynamic>;
+      final data = responseData['data'] as Map<String, dynamic>;
+
+      final user = UserModel.fromJson(data);
+
+      // Update local user data
+      await _storage.saveUser(user);
+
+      AppLogger.info('Profile updated successfully', 'AuthService');
+      return user;
+    } on DioException catch (e) {
+      AppLogger.error('Profile update failed: ${e.message}', 'AuthService');
+      throw _handleError(e);
+    } catch (e) {
+      AppLogger.error('Unexpected error updating profile: $e', 'AuthService');
+      throw ServerFailure('Failed to update profile: ${e.toString()}');
+    }
+  }
+
+  /// Change password
+  Future<void> changePassword({
+    required String currentPassword,
+    required String newPassword,
+  }) async {
+    try {
+      AppLogger.info('Changing user password', 'AuthService');
+
+      await _apiClient.post(
+        '/auth/change-password',
+        data: {
+          'currentPassword': currentPassword,
+          'newPassword': newPassword,
+        },
+      );
+
+      AppLogger.info('Password changed successfully', 'AuthService');
+    } on DioException catch (e) {
+      AppLogger.error('Password change failed: ${e.message}', 'AuthService');
+      throw _handleError(e);
+    } catch (e) {
+      AppLogger.error('Unexpected error changing password: $e', 'AuthService');
+      throw ServerFailure('Failed to change password: ${e.toString()}');
+    }
+  }
+
   /// Handle Dio errors and convert to Failures
   Failure _handleError(DioException error) {
     switch (error.type) {

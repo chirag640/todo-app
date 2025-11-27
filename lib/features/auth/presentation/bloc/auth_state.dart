@@ -99,3 +99,24 @@ class AuthSessionExpired extends AuthState {
   @override
   List<Object?> get props => [message];
 }
+
+/// Profile update successful
+class AuthProfileUpdated extends AuthState {
+  final UserModel user;
+  final String message;
+
+  const AuthProfileUpdated(this.user, this.message);
+
+  @override
+  List<Object?> get props => [user, message];
+}
+
+/// Password change successful
+class AuthPasswordChanged extends AuthState {
+  final String message;
+
+  const AuthPasswordChanged(this.message);
+
+  @override
+  List<Object?> get props => [message];
+}
