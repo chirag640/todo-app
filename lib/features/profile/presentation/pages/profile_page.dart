@@ -505,180 +505,145 @@ class _ProfilePageState extends State<ProfilePage> {
 
                             SizedBox(height: 2.h),
 
-                            // First Name Field
-                            Container(
-                              padding: EdgeInsets.symmetric(
-                                horizontal: 5.w,
-                                vertical: 2.h,
-                              ),
-                              decoration: BoxDecoration(
-                                color: AppColors.white,
-                                borderRadius: BorderRadius.circular(16),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: AppColors.shadow,
-                                    blurRadius: 6,
-                                    offset: Offset(0, 2),
-                                  ),
-                                ],
-                              ),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    'First Name',
-                                    style: TextStyle(
-                                      fontSize: 11.sp,
-                                      color: AppColors.textSecondary,
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                  ),
-                                  SizedBox(height: 0.5.h),
-                                  _isEditing
-                                      ? TextField(
-                                          controller: _firstNameController,
-                                          style: TextStyle(
-                                            fontSize: 14.sp,
-                                            fontWeight: FontWeight.w600,
-                                            color: AppColors.textPrimary,
-                                          ),
-                                          decoration: InputDecoration(
-                                            border: InputBorder.none,
-                                            isDense: true,
-                                            contentPadding: EdgeInsets.zero,
-                                          ),
-                                        )
-                                      : Text(
-                                          _firstNameController.text,
-                                          style: TextStyle(
-                                            fontSize: 14.sp,
-                                            fontWeight: FontWeight.w600,
-                                            color: AppColors.textPrimary,
-                                          ),
+                            // First Name and Last Name in Row
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        'First Name',
+                                        style: TextStyle(
+                                          fontSize: 11.sp,
+                                          color: AppColors.textSecondary,
+                                          fontWeight: FontWeight.w500,
                                         ),
-                                ],
-                              ),
-                            ),
-
-                            SizedBox(height: 2.h),
-
-                            // Last Name Field
-                            Container(
-                              padding: EdgeInsets.symmetric(
-                                horizontal: 5.w,
-                                vertical: 2.h,
-                              ),
-                              decoration: BoxDecoration(
-                                color: AppColors.white,
-                                borderRadius: BorderRadius.circular(16),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: AppColors.shadow,
-                                    blurRadius: 6,
-                                    offset: Offset(0, 2),
+                                      ),
+                                      SizedBox(height: 0.5.h),
+                                      _isEditing
+                                          ? TextField(
+                                              controller: _firstNameController,
+                                              style: TextStyle(
+                                                fontSize: 14.sp,
+                                                fontWeight: FontWeight.w600,
+                                                color: AppColors.textPrimary,
+                                              ),
+                                              decoration: InputDecoration(
+                                                border: InputBorder.none,
+                                                isDense: true,
+                                                contentPadding:
+                                                    EdgeInsets.symmetric(
+                                                        vertical: 1.h,
+                                                        horizontal: 3.w),
+                                              ),
+                                            )
+                                          : Text(
+                                              _firstNameController.text,
+                                              style: TextStyle(
+                                                fontSize: 14.sp,
+                                                fontWeight: FontWeight.w600,
+                                                color: AppColors.textPrimary,
+                                              ),
+                                            ),
+                                    ],
                                   ),
-                                ],
-                              ),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    'Last Name',
-                                    style: TextStyle(
-                                      fontSize: 11.sp,
-                                      color: AppColors.textSecondary,
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                  ),
-                                  SizedBox(height: 0.5.h),
-                                  _isEditing
-                                      ? TextField(
-                                          controller: _lastNameController,
-                                          style: TextStyle(
-                                            fontSize: 14.sp,
-                                            fontWeight: FontWeight.w600,
-                                            color: AppColors.textPrimary,
-                                          ),
-                                          decoration: InputDecoration(
-                                            border: InputBorder.none,
-                                            isDense: true,
-                                            contentPadding: EdgeInsets.zero,
-                                          ),
-                                        )
-                                      : Text(
-                                          _lastNameController.text.isEmpty
-                                              ? 'Not provided'
-                                              : _lastNameController.text,
-                                          style: TextStyle(
-                                            fontSize: 14.sp,
-                                            fontWeight: FontWeight.w600,
-                                            color:
-                                                _lastNameController.text.isEmpty
+                                ),
+                                SizedBox(width: 4.w),
+
+                                // Last Name Field
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        'Last Name',
+                                        style: TextStyle(
+                                          fontSize: 11.sp,
+                                          color: AppColors.textSecondary,
+                                          fontWeight: FontWeight.w500,
+                                        ),
+                                      ),
+                                      SizedBox(height: 0.5.h),
+                                      _isEditing
+                                          ? TextField(
+                                              controller: _lastNameController,
+                                              style: TextStyle(
+                                                fontSize: 14.sp,
+                                                fontWeight: FontWeight.w600,
+                                                color: AppColors.textPrimary,
+                                              ),
+                                              decoration: InputDecoration(
+                                                border: InputBorder.none,
+                                                isDense: true,
+                                                contentPadding:
+                                                    EdgeInsets.symmetric(
+                                                        vertical: 1.h,
+                                                        horizontal: 3.w),
+                                              ),
+                                            )
+                                          : Text(
+                                              _lastNameController.text.isEmpty
+                                                  ? 'Not provided'
+                                                  : _lastNameController.text,
+                                              style: TextStyle(
+                                                fontSize: 14.sp,
+                                                fontWeight: FontWeight.w600,
+                                                color: _lastNameController
+                                                        .text.isEmpty
                                                     ? AppColors.textSecondary
                                                     : AppColors.textPrimary,
-                                          ),
-                                        ),
-                                ],
-                              ),
+                                              ),
+                                            ),
+                                    ],
+                                  ),
+                                ),
+                              ],
                             ),
 
                             SizedBox(height: 2.h),
 
                             // Email Field
-                            Container(
-                              padding: EdgeInsets.symmetric(
-                                horizontal: 5.w,
-                                vertical: 2.h,
-                              ),
-                              decoration: BoxDecoration(
-                                color: AppColors.white,
-                                borderRadius: BorderRadius.circular(16),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: AppColors.shadow,
-                                    blurRadius: 6,
-                                    offset: Offset(0, 2),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'Email Address',
+                                  style: TextStyle(
+                                    fontSize: 11.sp,
+                                    color: AppColors.textSecondary,
+                                    fontWeight: FontWeight.w500,
                                   ),
-                                ],
-                              ),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    'Email Address',
-                                    style: TextStyle(
-                                      fontSize: 11.sp,
-                                      color: AppColors.textSecondary,
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                  ),
-                                  SizedBox(height: 0.5.h),
-                                  _isEditing
-                                      ? TextField(
-                                          controller: _emailController,
-                                          keyboardType:
-                                              TextInputType.emailAddress,
-                                          style: TextStyle(
-                                            fontSize: 14.sp,
-                                            fontWeight: FontWeight.w600,
-                                            color: AppColors.textPrimary,
-                                          ),
-                                          decoration: InputDecoration(
-                                            border: InputBorder.none,
-                                            isDense: true,
-                                            contentPadding: EdgeInsets.zero,
-                                          ),
-                                        )
-                                      : Text(
-                                          _emailController.text,
-                                          style: TextStyle(
-                                            fontSize: 14.sp,
-                                            fontWeight: FontWeight.w600,
-                                            color: AppColors.textPrimary,
-                                          ),
+                                ),
+                                SizedBox(height: 0.5.h),
+                                _isEditing
+                                    ? TextField(
+                                        controller: _emailController,
+                                        keyboardType:
+                                            TextInputType.emailAddress,
+                                        style: TextStyle(
+                                          fontSize: 14.sp,
+                                          fontWeight: FontWeight.w600,
+                                          color: AppColors.textPrimary,
                                         ),
-                                ],
-                              ),
+                                        decoration: InputDecoration(
+                                          border: InputBorder.none,
+                                          isDense: true,
+                                          contentPadding: EdgeInsets.symmetric(
+                                              vertical: 1.h, horizontal: 3.w),
+                                        ),
+                                      )
+                                    : Text(
+                                        _emailController.text,
+                                        style: TextStyle(
+                                          fontSize: 14.sp,
+                                          fontWeight: FontWeight.w600,
+                                          color: AppColors.textPrimary,
+                                        ),
+                                      ),
+                              ],
                             ),
 
                             SizedBox(height: 4.h),
