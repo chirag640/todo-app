@@ -108,11 +108,12 @@ class TaskService {
   Future<TaskModel> toggleTaskCompletion(String id, bool isCompleted) async {
     try {
       final newStatus = isCompleted ? 'Completed' : 'Pending';
-      final response = await apiClient.put(
+      final response = await apiClient.patch(
         '/tasks/$id',
         data: {
           'status': newStatus,
-          if (isCompleted) 'completedAt': DateTime.now().toIso8601String(),
+          if (isCompleted)
+            'completedAt': DateTime.now().toUtc().toIso8601String(),
         },
       );
       final responseData = response.data as Map<String, dynamic>;
@@ -163,7 +164,8 @@ class TaskService {
   Future<List<TaskModel>> filterTasks({
     List<String>? priorities,
     String? sortBy,
-    bool? isCompleted,
+    String? status,
+    String? dateFilter,
   }) async {
     try {
       final queryParams = <String, dynamic>{};
@@ -177,8 +179,12 @@ class TaskService {
         queryParams['order'] = 'desc';
       }
 
-      if (isCompleted != null) {
-        queryParams['status'] = isCompleted ? 'Completed' : 'Pending';
+      if (status != null) {
+        queryParams['status'] = status;
+      }
+
+      if (dateFilter != null) {
+        queryParams['dateFilter'] = dateFilter;
       }
 
       final response = await apiClient.get(

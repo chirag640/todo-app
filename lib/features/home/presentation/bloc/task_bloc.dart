@@ -164,7 +164,8 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
       final tasks = await taskService.filterTasks(
         priorities: event.priorities,
         sortBy: event.sortBy,
-        isCompleted: event.isCompleted,
+        status: event.status,
+        dateFilter: event.dateFilter,
       );
 
       if (tasks.isEmpty) {

@@ -5,12 +5,21 @@ import '../../../../core/theme/app_colors.dart';
 class FilterBottomSheet extends StatefulWidget {
   final String selectedSortBy;
   final List<String> selectedPriorities;
-  final Function(String sortBy, List<String> priorities) onApply;
+  final String? selectedStatus;
+  final String? selectedDateFilter;
+  final Function(
+    String sortBy,
+    List<String> priorities,
+    String? status,
+    String? dateFilter,
+  ) onApply;
 
   const FilterBottomSheet({
     super.key,
     required this.selectedSortBy,
     required this.selectedPriorities,
+    this.selectedStatus,
+    this.selectedDateFilter,
     required this.onApply,
   });
 
@@ -21,29 +30,24 @@ class FilterBottomSheet extends StatefulWidget {
 class _FilterBottomSheetState extends State<FilterBottomSheet> {
   late String _selectedSortBy;
   late List<String> _selectedPriorities;
+  String? _selectedStatus;
+  String? _selectedDateFilter;
 
   @override
   void initState() {
     super.initState();
     _selectedSortBy = widget.selectedSortBy;
     _selectedPriorities = List.from(widget.selectedPriorities);
+    _selectedStatus = widget.selectedStatus;
+    _selectedDateFilter = widget.selectedDateFilter;
   }
 
   void _togglePriority(String priority) {
     setState(() {
-      if (priority == 'all') {
-        _selectedPriorities.clear();
-        _selectedPriorities.add('all');
+      if (_selectedPriorities.contains(priority)) {
+        _selectedPriorities.remove(priority);
       } else {
-        _selectedPriorities.remove('all');
-        if (_selectedPriorities.contains(priority)) {
-          _selectedPriorities.remove(priority);
-          if (_selectedPriorities.isEmpty) {
-            _selectedPriorities.add('all');
-          }
-        } else {
-          _selectedPriorities.add(priority);
-        }
+        _selectedPriorities.add(priority);
       }
     });
   }
@@ -66,9 +70,11 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
         ],
       ),
       child: SafeArea(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
+        child: SizedBox(
+          height: MediaQuery.of(context).size.height * 0.6,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
             // Handle bar
             Container(
               margin: EdgeInsets.only(top: 1.5.h),
@@ -98,8 +104,10 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
                   TextButton(
                     onPressed: () {
                       setState(() {
-                        _selectedSortBy = 'priority';
-                        _selectedPriorities = ['all'];
+                        _selectedSortBy = 'createdAt';
+                        _selectedPriorities = [];
+                        _selectedStatus = null;
+                        _selectedDateFilter = null;
                       });
                     },
                     style: TextButton.styleFrom(
@@ -109,7 +117,7 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
                       ),
                       backgroundColor: AppColors.primary.withOpacity(0.1),
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(20),
+                        borderRadius: BorderRadius.circular(12.sp),
                       ),
                     ),
                     child: Text(
@@ -141,24 +149,55 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
 
             SizedBox(height: 2.h),
 
-            // Priority Filters
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: 6.w),
-              child: Column(
-                children: [
-                  _buildPriorityOption('All', 'all', null),
-                  SizedBox(height: 1.h),
-                  _buildPriorityOption('High', 'high', AppColors.priorityHigh),
-                  SizedBox(height: 1.h),
-                  _buildPriorityOption(
-                      'Medium', 'medium', AppColors.priorityMedium),
-                  SizedBox(height: 1.h),
-                  _buildPriorityOption('Low', 'low', AppColors.priorityLow),
-                ],
+            // Scrollable content
+            Expanded(
+              child: SingleChildScrollView(
+                padding: EdgeInsets.symmetric(horizontal: 6.w),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Status Filter
+                    Text(
+                      'Status',
+                      style: TextStyle(
+                        fontSize: 13.sp,
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.textSecondary,
+                      ),
+                    ),
+                    SizedBox(height: 1.h),
+                    Row(
+                      children: [
+                        _buildStatusChip('Pending', 'Pending'),
+                        SizedBox(width: 2.w),
+                        _buildStatusChip('Completed', 'Completed'),
+                      ],
+                    ),
+
+                    SizedBox(height: 2.h),
+
+                    // Priority Filters
+                    Text(
+                      'Priority',
+                      style: TextStyle(
+                        fontSize: 13.sp,
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.textSecondary,
+                      ),
+                    ),
+                    SizedBox(height: 1.h),
+                    _buildPriorityOption('High', 'High', AppColors.priorityHigh),
+                    SizedBox(height: 1.h),
+                    _buildPriorityOption(
+                        'Medium', 'Medium', AppColors.priorityMedium),
+                    SizedBox(height: 1.h),
+                    _buildPriorityOption('Low', 'Low', AppColors.priorityLow),
+
+                    SizedBox(height: 2.h),
+                  ],
+                ),
               ),
             ),
-
-            // SizedBox(height: 2.h),
 
             // Apply Button
             Padding(
@@ -168,7 +207,12 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
                 height: 6.h,
                 child: ElevatedButton(
                   onPressed: () {
-                    widget.onApply(_selectedSortBy, _selectedPriorities);
+                    widget.onApply(
+                      _selectedSortBy,
+                      _selectedPriorities,
+                      _selectedStatus,
+                      _selectedDateFilter,
+                    );
                     Navigator.pop(context);
                   },
                   style: ElevatedButton.styleFrom(
@@ -191,7 +235,7 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
             ),
           ],
         ),
-      ),
+      ),)
     );
   }
 
@@ -302,4 +346,39 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
       ),
     );
   }
+
+  Widget _buildStatusChip(String label, String? value) {
+    final isSelected = _selectedStatus == value;
+    return Expanded(
+      child: GestureDetector(
+        onTap: () {
+          setState(() {
+            _selectedStatus = value;
+          });
+        },
+        child: Container(
+          padding: EdgeInsets.symmetric(vertical: 1.h),
+          decoration: BoxDecoration(
+            color: isSelected ? AppColors.primary : AppColors.background,
+            borderRadius: BorderRadius.circular(10),
+            border: isSelected
+                ? Border.all(color: AppColors.primary, width: 1.5)
+                : null,
+          ),
+          child: Center(
+            child: Text(
+              label,
+              style: TextStyle(
+                fontSize: 11.sp,
+                fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+                color: isSelected ? AppColors.white : AppColors.textSecondary,
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+
 }

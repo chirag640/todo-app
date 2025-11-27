@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sizer/sizer.dart';
@@ -9,7 +10,7 @@ import '../bloc/task_bloc.dart';
 import '../bloc/task_event.dart';
 import '../bloc/task_state.dart';
 import '../../data/models/task_model.dart';
-import 'new_task_page.dart';
+import 'task_form_page.dart';
 import 'task_details_page.dart';
 
 /// Home page - My Tasks screen
@@ -23,8 +24,11 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   final TextEditingController _searchController = TextEditingController();
   final FocusNode _searchFocusNode = FocusNode();
-  String _selectedSortBy = 'priority';
-  List<String> _selectedPriorities = ['all'];
+  String _selectedSortBy = 'createdAt';
+  List<String> _selectedPriorities = [];
+  String? _selectedStatus;
+  String? _selectedDateFilter;
+  Timer? _searchDebounce;
 
   @override
   void initState() {
@@ -38,6 +42,7 @@ class _HomePageState extends State<HomePage> {
 
   @override
   void dispose() {
+    _searchDebounce?.cancel();
     _searchController.removeListener(_onSearchChanged);
     _searchController.dispose();
     _searchFocusNode.dispose();
@@ -45,12 +50,18 @@ class _HomePageState extends State<HomePage> {
   }
 
   void _onSearchChanged() {
-    final query = _searchController.text;
-    if (query.isEmpty) {
-      context.read<TaskBloc>().add(const LoadTasksEvent());
-    } else {
-      context.read<TaskBloc>().add(SearchTasksEvent(query));
-    }
+    // Cancel previous timer if exists
+    _searchDebounce?.cancel();
+
+    // Create new timer with 400ms delay
+    _searchDebounce = Timer(const Duration(milliseconds: 400), () {
+      final query = _searchController.text;
+      if (query.isEmpty) {
+        context.read<TaskBloc>().add(const LoadTasksEvent());
+      } else {
+        context.read<TaskBloc>().add(SearchTasksEvent(query));
+      }
+    });
   }
 
   void _showFilterBottomSheet() {
@@ -61,27 +72,53 @@ class _HomePageState extends State<HomePage> {
       builder: (context) => FilterBottomSheet(
         selectedSortBy: _selectedSortBy,
         selectedPriorities: _selectedPriorities,
-        onApply: (sortBy, priorities) {
+        selectedStatus: _selectedStatus,
+        selectedDateFilter: _selectedDateFilter,
+        onApply: (sortBy, priorities, status, dateFilter) {
           setState(() {
             _selectedSortBy = sortBy;
             _selectedPriorities = priorities;
+            _selectedStatus = status;
+            _selectedDateFilter = dateFilter;
           });
 
           // Apply filter via BLoC
           context.read<TaskBloc>().add(FilterTasksEvent(
                 priorities: priorities.contains('all') ? null : priorities,
                 sortBy: sortBy,
+                status: status,
+                dateFilter: dateFilter,
               ));
         },
       ),
     );
   }
 
+  int _getActiveFilterCount() {
+    int count = 0;
+    if (_selectedPriorities.isNotEmpty) count++;
+    if (_selectedStatus != null) count++;
+    if (_selectedDateFilter != null) count++;
+    if (_selectedSortBy != 'createdAt') count++;
+    return count;
+  }
+
+  void _clearAllFilters() {
+    setState(() {
+      _searchController.clear();
+      _selectedSortBy = 'createdAt';
+      _selectedPriorities = [];
+      _selectedStatus = null;
+      _selectedDateFilter = null;
+    });
+    context.read<TaskBloc>().add(const LoadTasksEvent());
+  }
+
   Future<void> _navigateToNewTask() async {
     final result = await Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => const NewTaskPage(),
+        builder: (context) => const TaskFormPage(),
       ),
     );
 
@@ -141,6 +178,7 @@ class _HomePageState extends State<HomePage> {
       'description': task.description,
       'dueDate':
           task.dueDate != null ? _formatDate(task.dueDate!) : 'No due date',
+      'dueDateRaw': task.dueDate, // Add raw DateTime for edit page
       'priority': task.priority.toLowerCase(),
       'category': task.category,
       'isCompleted': task.isCompleted,
@@ -215,10 +253,28 @@ class _HomePageState extends State<HomePage> {
             priority: taskMap['priority'],
             isCompleted: taskMap['isCompleted'],
             onToggle: () {
-              if (task.id != null) {
+              if (task.id != null && task.id!.isNotEmpty) {
                 context.read<TaskBloc>().add(
                       ToggleTaskCompletionEvent(task.id!, !task.isCompleted),
                     );
+              } else {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Row(
+                      children: [
+                        Icon(Icons.error_outline, color: AppColors.white),
+                        SizedBox(width: 2.w),
+                        const Expanded(
+                          child:
+                              Text('Error: Cannot toggle task - ID is missing'),
+                        ),
+                      ],
+                    ),
+                    backgroundColor: AppColors.error,
+                    behavior: SnackBarBehavior.floating,
+                    duration: const Duration(seconds: 3),
+                  ),
+                );
               }
             },
             onTap: () => _navigateToTaskDetails(task),
@@ -385,21 +441,56 @@ class _HomePageState extends State<HomePage> {
                   ),
                   GestureDetector(
                     onTap: _showFilterBottomSheet,
-                    child: Container(
-                      padding: EdgeInsets.all(2.w),
-                      decoration: BoxDecoration(
-                        color: isFilterActive
-                            ? Colors.white
-                            : Colors.white.withOpacity(0.2),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Icon(
-                        Icons.tune_rounded,
-                        color: isFilterActive
-                            ? AppColors.primary
-                            : AppColors.white,
-                        size: 5.w,
-                      ),
+                    child: Stack(
+                      clipBehavior: Clip.none,
+                      children: [
+                        Container(
+                          padding: EdgeInsets.all(2.w),
+                          decoration: BoxDecoration(
+                            color: isFilterActive
+                                ? Colors.white
+                                : Colors.white.withOpacity(0.2),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Icon(
+                            Icons.tune_rounded,
+                            color: isFilterActive
+                                ? AppColors.primary
+                                : AppColors.white,
+                            size: 5.w,
+                          ),
+                        ),
+                        if (_getActiveFilterCount() > 0)
+                          Positioned(
+                            right: -4,
+                            top: -4,
+                            child: Container(
+                              padding: EdgeInsets.all(1.w),
+                              decoration: BoxDecoration(
+                                color: AppColors.error,
+                                shape: BoxShape.circle,
+                                border: Border.all(
+                                  color: AppColors.primary,
+                                  width: 2,
+                                ),
+                              ),
+                              constraints: BoxConstraints(
+                                minWidth: 4.w,
+                                minHeight: 4.w,
+                              ),
+                              child: Center(
+                                child: Text(
+                                  '${_getActiveFilterCount()}',
+                                  style: TextStyle(
+                                    fontSize: 8.sp,
+                                    fontWeight: FontWeight.bold,
+                                    color: AppColors.white,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                      ],
                     ),
                   ),
                 ],
@@ -516,12 +607,17 @@ class _HomePageState extends State<HomePage> {
     }
 
     if (state is TaskEmpty) {
+      final hasSearch = _searchController.text.isNotEmpty;
+      final hasFilters = _getActiveFilterCount() > 0;
+      
       return Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(
-              Icons.inbox_rounded,
+              hasSearch || hasFilters
+                  ? Icons.search_off_rounded
+                  : Icons.inbox_rounded,
               size: 80,
               color: AppColors.textSecondary.withOpacity(0.3),
             ),
@@ -537,13 +633,34 @@ class _HomePageState extends State<HomePage> {
             ),
             SizedBox(height: 1.h),
             Text(
-              'Tap the + button to create your first task',
+              hasSearch || hasFilters
+                  ? 'Try adjusting your search or filters'
+                  : 'Tap the + button to create your first task',
               style: TextStyle(
                 fontSize: 12.sp,
                 color: AppColors.textSecondary.withOpacity(0.7),
               ),
               textAlign: TextAlign.center,
             ),
+            if (hasSearch || hasFilters) ...[
+              SizedBox(height: 3.h),
+              ElevatedButton.icon(
+                onPressed: _clearAllFilters,
+                icon: Icon(Icons.clear_all_rounded, size: 5.w),
+                label: Text('Clear All'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.primary,
+                  foregroundColor: AppColors.white,
+                  padding: EdgeInsets.symmetric(
+                    horizontal: 6.w,
+                    vertical: 1.5.h,
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+              ),
+            ],
           ],
         ),
       );

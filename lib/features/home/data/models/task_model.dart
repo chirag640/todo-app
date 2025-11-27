@@ -38,17 +38,18 @@ class TaskModel extends Equatable {
 
   factory TaskModel.fromJson(Map<String, dynamic> json) {
     return TaskModel(
-      id: json['_id'] as String?,
+      // Backend returns 'id', but also check '_id' for MongoDB compatibility
+      id: (json['id'] ?? json['_id']) as String?,
       title: json['title'] as String,
       description: json['description'] as String?,
       status: json['status'] as String? ?? 'Pending',
       priority: json['priority'] as String? ?? 'Medium',
       category: json['category'] as String?,
       dueDate: json['dueDate'] != null
-          ? DateTime.parse(json['dueDate'] as String)
+          ? DateTime.parse(json['dueDate'] as String).toLocal()
           : null,
       startDate: json['startDate'] != null
-          ? DateTime.parse(json['startDate'] as String)
+          ? DateTime.parse(json['startDate'] as String).toLocal()
           : null,
       completedAt: json['completedAt'] != null
           ? DateTime.parse(json['completedAt'] as String)
@@ -68,18 +69,20 @@ class TaskModel extends Equatable {
 
   Map<String, dynamic> toJson() {
     return {
-      if (id != null) '_id': id,
+      // Don't include _id in request body - it goes in the URL
       'title': title,
       if (description != null) 'description': description,
       'status': status,
       'priority': priority,
       if (category != null) 'category': category,
-      if (dueDate != null) 'dueDate': dueDate!.toIso8601String(),
-      if (startDate != null) 'startDate': startDate!.toIso8601String(),
-      if (completedAt != null) 'completedAt': completedAt!.toIso8601String(),
+      if (dueDate != null) 'dueDate': dueDate!.toUtc().toIso8601String(),
+      if (startDate != null) 'startDate': startDate!.toUtc().toIso8601String(),
+      if (completedAt != null)
+        'completedAt': completedAt!.toUtc().toIso8601String(),
       if (tags != null) 'tags': tags,
-      'isArchived': isArchived,
-      'isDeleted': isDeleted,
+      // Don't send isArchived and isDeleted unless they're true (backend defaults to false)
+      if (isArchived) 'isArchived': isArchived,
+      if (isDeleted) 'isDeleted': isDeleted,
     };
   }
 

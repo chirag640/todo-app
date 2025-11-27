@@ -69,16 +69,18 @@ class SearchTasksEvent extends TaskEvent {
 class FilterTasksEvent extends TaskEvent {
   final List<String>? priorities;
   final String? sortBy;
-  final bool? isCompleted;
+  final String? status;
+  final String? dateFilter;
 
   const FilterTasksEvent({
     this.priorities,
     this.sortBy,
-    this.isCompleted,
+    this.status,
+    this.dateFilter,
   });
 
   @override
-  List<Object?> get props => [priorities, sortBy, isCompleted];
+  List<Object?> get props => [priorities, sortBy, status, dateFilter];
 }
 
 /// Clear search/filter and reload all tasks
