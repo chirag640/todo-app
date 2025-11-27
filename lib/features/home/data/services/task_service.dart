@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import '../../../../core/api/api_client.dart';
 import '../../../../core/errors/failures.dart';
+import '../../../../core/services/notification_service.dart';
 import '../models/task_model.dart';
 
 class TaskService {
@@ -75,7 +76,24 @@ class TaskService {
         data: task.toJson(),
       );
       final responseData = response.data as Map<String, dynamic>;
-      return TaskModel.fromJson(responseData['data'] as Map<String, dynamic>);
+      final createdTask =
+          TaskModel.fromJson(responseData['data'] as Map<String, dynamic>);
+
+      // Schedule reminders if task has due date
+      if (createdTask.dueDate != null && createdTask.id != null) {
+        try {
+          await NotificationService.instance.scheduleTaskReminders(
+            taskId: createdTask.id!,
+            taskTitle: createdTask.title,
+            dueDate: createdTask.dueDate!,
+          );
+        } catch (e) {
+          // Log error but don't fail task creation
+          print('Failed to schedule reminders: $e');
+        }
+      }
+
+      return createdTask;
     } on DioException catch (e) {
       throw _handleError(e);
     }
@@ -89,7 +107,30 @@ class TaskService {
         data: task.toJson(),
       );
       final responseData = response.data as Map<String, dynamic>;
-      return TaskModel.fromJson(responseData['data'] as Map<String, dynamic>);
+      final updatedTask =
+          TaskModel.fromJson(responseData['data'] as Map<String, dynamic>);
+
+      // Cancel existing reminders
+      try {
+        await NotificationService.instance.cancelTaskReminders(id);
+      } catch (e) {
+        print('Failed to cancel reminders: $e');
+      }
+
+      // Schedule new reminders if task has due date and is not completed
+      if (updatedTask.dueDate != null && !updatedTask.isCompleted) {
+        try {
+          await NotificationService.instance.scheduleTaskReminders(
+            taskId: id,
+            taskTitle: updatedTask.title,
+            dueDate: updatedTask.dueDate!,
+          );
+        } catch (e) {
+          print('Failed to schedule reminders: $e');
+        }
+      }
+
+      return updatedTask;
     } on DioException catch (e) {
       throw _handleError(e);
     }
@@ -99,6 +140,13 @@ class TaskService {
   Future<void> deleteTask(String id) async {
     try {
       await apiClient.delete('/tasks/$id');
+
+      // Cancel all reminders for this task
+      try {
+        await NotificationService.instance.cancelTaskReminders(id);
+      } catch (e) {
+        print('Failed to cancel reminders: $e');
+      }
     } on DioException catch (e) {
       throw _handleError(e);
     }
@@ -117,7 +165,19 @@ class TaskService {
         },
       );
       final responseData = response.data as Map<String, dynamic>;
-      return TaskModel.fromJson(responseData['data'] as Map<String, dynamic>);
+      final updatedTask =
+          TaskModel.fromJson(responseData['data'] as Map<String, dynamic>);
+
+      // Cancel reminders when task is completed
+      if (isCompleted) {
+        try {
+          await NotificationService.instance.cancelTaskReminders(id);
+        } catch (e) {
+          print('Failed to cancel reminders: $e');
+        }
+      }
+
+      return updatedTask;
     } on DioException catch (e) {
       throw _handleError(e);
     }

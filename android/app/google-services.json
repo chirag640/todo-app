@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "176853906692",
+    "project_id": "flutterassignment-33ff2",
+    "storage_bucket": "flutterassignment-33ff2.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:176853906692:android:19f3116c6c699c71e54c51",
+        "android_client_info": {
+          "package_name": "com.example.todo_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCDU7kEE1ZbVC4UoKH_4E-UH30fhLesiMk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

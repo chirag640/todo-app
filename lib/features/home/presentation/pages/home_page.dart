@@ -1,9 +1,11 @@
+import 'task_details_page.dart';
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sizer/sizer.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/routing/app_router.dart';
+import '../../../../core/services/notification_service.dart';
 import '../widgets/task_card.dart';
 import '../widgets/filter_bottom_sheet.dart';
 import '../bloc/task_bloc.dart';
@@ -11,7 +13,6 @@ import '../bloc/task_event.dart';
 import '../bloc/task_state.dart';
 import '../../data/models/task_model.dart';
 import 'task_form_page.dart';
-import 'task_details_page.dart';
 
 /// Home page - My Tasks screen
 class HomePage extends StatefulWidget {
@@ -557,42 +558,84 @@ class _HomePageState extends State<HomePage> {
           ),
         ),
       ),
-      floatingActionButton: Container(
-        width: 16.w,
-        height: 16.w,
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [
-              AppColors.primary,
-              AppColors.primaryDark,
-            ],
+      floatingActionButton: Column(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          // Test Notification Button
+          FloatingActionButton(
+            heroTag: 'test_notification',
+            onPressed: () async {
+              try {
+                await NotificationService.instance.showInstantNotification(
+                  title: '🎉 Test Notification',
+                  body: 'Your notification system is working perfectly!',
+                );
+
+                if (mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('✅ Test notification sent!'),
+                      duration: Duration(seconds: 2),
+                      backgroundColor: Colors.green,
+                    ),
+                  );
+                }
+              } catch (e) {
+                debugPrint('Failed to send test notification: $e');
+                if (mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('❌ Error: $e'),
+                      duration: const Duration(seconds: 2),
+                      backgroundColor: Colors.red,
+                    ),
+                  );
+                }
+              }
+            },
+            backgroundColor: Colors.orange,
+            child: const Icon(Icons.notifications_active),
           ),
-          shape: BoxShape.circle,
-          boxShadow: [
-            BoxShadow(
-              color: AppColors.primary.withOpacity(0.4),
-              blurRadius: 20,
-              offset: const Offset(0, 8),
-              spreadRadius: 0,
+          SizedBox(height: 2.h),
+          // Add Task Button
+          Container(
+            width: 16.w,
+            height: 16.w,
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [
+                  AppColors.primary,
+                  AppColors.primaryDark,
+                ],
+              ),
+              shape: BoxShape.circle,
+              boxShadow: [
+                BoxShadow(
+                  color: AppColors.primary.withOpacity(0.4),
+                  blurRadius: 20,
+                  offset: const Offset(0, 8),
+                  spreadRadius: 0,
+                ),
+              ],
             ),
-          ],
-        ),
-        child: Material(
-          color: Colors.transparent,
-          child: InkWell(
-            onTap: _navigateToNewTask,
-            borderRadius: BorderRadius.circular(50),
-            child: Center(
-              child: Icon(
-                Icons.add_rounded,
-                size: 9.w,
-                color: AppColors.white,
+            child: Material(
+              color: Colors.transparent,
+              child: InkWell(
+                onTap: _navigateToNewTask,
+                borderRadius: BorderRadius.circular(50),
+                child: Center(
+                  child: Icon(
+                    Icons.add_rounded,
+                    size: 9.w,
+                    color: AppColors.white,
+                  ),
+                ),
               ),
             ),
           ),
-        ),
+        ],
       ),
     );
   }
@@ -609,7 +652,7 @@ class _HomePageState extends State<HomePage> {
     if (state is TaskEmpty) {
       final hasSearch = _searchController.text.isNotEmpty;
       final hasFilters = _getActiveFilterCount() > 0;
-      
+
       return Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
