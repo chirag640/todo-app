@@ -1,18 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sizer/sizer.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../bloc/task_bloc.dart';
+import '../bloc/task_event.dart';
 import 'edit_task_page.dart';
 
 class TaskDetailsPage extends StatefulWidget {
   final Map<String, dynamic> task;
-  final Function(Map<String, dynamic>) onUpdate;
-  final VoidCallback onDelete;
 
   const TaskDetailsPage({
     super.key,
     required this.task,
-    required this.onUpdate,
-    required this.onDelete,
   });
 
   @override
@@ -31,9 +30,12 @@ class _TaskDetailsPageState extends State<TaskDetailsPage> {
   void _toggleCompletion() {
     setState(() {
       _isCompleted = !_isCompleted;
-      widget.task['isCompleted'] = _isCompleted;
-      widget.onUpdate(widget.task);
     });
+
+    // Dispatch toggle event
+    context.read<TaskBloc>().add(
+          ToggleTaskCompletionEvent(widget.task['id'], _isCompleted),
+        );
   }
 
   void _showDeleteConfirmation() {
@@ -72,9 +74,10 @@ class _TaskDetailsPageState extends State<TaskDetailsPage> {
           ),
           TextButton(
             onPressed: () {
+              // Dispatch delete event
+              context.read<TaskBloc>().add(DeleteTaskEvent(widget.task['id']));
               Navigator.pop(context); // Close dialog
               Navigator.pop(context); // Go back to home
-              widget.onDelete();
             },
             child: Text(
               'Delete',
@@ -480,9 +483,9 @@ class _TaskDetailsPageState extends State<TaskDetailsPage> {
                                   ),
                                 ),
                               );
-                              if (result != null) {
-                                widget.onUpdate(result);
-                                Navigator.pop(context, result);
+                              if (result != null && result == true) {
+                                // Task was updated via BLoC, just go back
+                                Navigator.pop(context, true);
                               }
                             },
                             borderRadius: BorderRadius.circular(16),

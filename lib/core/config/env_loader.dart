@@ -24,8 +24,9 @@ class EnvLoader {
 
   static String get apiBaseUrl {
     if (_isLoaded) {
-      return dotenv.maybeGet('API_BASE_URL') ?? 'https://api.example.com';
+      return dotenv.maybeGet('API_BASE_URL') ?? 'http://192.168.0.208:3000/api';
     }
-    return 'https://api.example.com';
+    // Default using actual IP address (change this to your computer's IP if different)
+    return 'http://192.168.0.208:3000/api';
   }
 }

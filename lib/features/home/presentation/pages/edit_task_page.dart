@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sizer/sizer.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../bloc/task_bloc.dart';
+import '../bloc/task_event.dart';
+import '../../data/models/task_model.dart';
 
 class EditTaskPage extends StatefulWidget {
   final Map<String, dynamic> task;
@@ -17,6 +21,7 @@ class EditTaskPage extends StatefulWidget {
 class _EditTaskPageState extends State<EditTaskPage> {
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
+  final TextEditingController _categoryController = TextEditingController();
   String _selectedPriority = 'medium';
   DateTime? _selectedDate;
 
@@ -26,9 +31,15 @@ class _EditTaskPageState extends State<EditTaskPage> {
     // Pre-populate fields with existing task data
     _titleController.text = widget.task['title'] ?? '';
     _descriptionController.text = widget.task['description'] ?? '';
+    _categoryController.text = widget.task['category'] ?? '';
     _selectedPriority = widget.task['priority'] ?? 'medium';
-    if (widget.task['dueDate'] != null) {
-      _selectedDate = DateTime.parse(widget.task['dueDate']);
+    if (widget.task['dueDate'] != null &&
+        widget.task['dueDate'] != 'No due date') {
+      try {
+        _selectedDate = DateTime.parse(widget.task['dueDate']);
+      } catch (e) {
+        _selectedDate = null;
+      }
     }
   }
 
@@ -36,6 +47,7 @@ class _EditTaskPageState extends State<EditTaskPage> {
   void dispose() {
     _titleController.dispose();
     _descriptionController.dispose();
+    _categoryController.dispose();
     super.dispose();
   }
 
@@ -54,17 +66,30 @@ class _EditTaskPageState extends State<EditTaskPage> {
       return;
     }
 
-    final updatedTask = {
-      'id': widget.task['id'],
-      'title': _titleController.text.trim(),
-      'description': _descriptionController.text.trim(),
-      'priority': _selectedPriority,
-      'dueDate': _selectedDate?.toIso8601String(),
-      'isCompleted': widget.task['isCompleted'],
-      'category': widget.task['category'],
-    };
+    // Capitalize first letter of priority
+    final priority =
+        _selectedPriority[0].toUpperCase() + _selectedPriority.substring(1);
 
-    Navigator.pop(context, updatedTask);
+    // Create updated task model
+    final updatedTask = TaskModel(
+      id: widget.task['id'],
+      title: _titleController.text.trim(),
+      description: _descriptionController.text.trim().isNotEmpty
+          ? _descriptionController.text.trim()
+          : null,
+      priority: priority,
+      category: _categoryController.text.trim().isNotEmpty
+          ? _categoryController.text.trim()
+          : null,
+      dueDate: _selectedDate,
+      status: widget.task['isCompleted'] ? 'Completed' : 'Pending',
+    );
+
+    // Dispatch update event
+    context
+        .read<TaskBloc>()
+        .add(UpdateTaskEvent(widget.task['id'], updatedTask));
+    Navigator.pop(context, true);
   }
 
   Future<void> _selectDate(BuildContext context) async {

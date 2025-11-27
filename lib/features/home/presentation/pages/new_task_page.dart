@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sizer/sizer.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../bloc/task_bloc.dart';
+import '../bloc/task_event.dart';
+import '../../data/models/task_model.dart';
 
 class NewTaskPage extends StatefulWidget {
   const NewTaskPage({super.key});
@@ -12,6 +16,7 @@ class NewTaskPage extends StatefulWidget {
 class _NewTaskPageState extends State<NewTaskPage> {
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
+  final TextEditingController _categoryController = TextEditingController();
   String _selectedPriority = 'medium';
   DateTime? _selectedDate;
 
@@ -19,6 +24,7 @@ class _NewTaskPageState extends State<NewTaskPage> {
   void dispose() {
     _titleController.dispose();
     _descriptionController.dispose();
+    _categoryController.dispose();
     super.dispose();
   }
 
@@ -81,13 +87,26 @@ class _NewTaskPageState extends State<NewTaskPage> {
       return;
     }
 
-    // Return task data to previous screen
-    Navigator.pop(context, {
-      'title': _titleController.text.trim(),
-      'description': _descriptionController.text.trim(),
-      'priority': _selectedPriority,
-      'dueDate': _selectedDate,
-    });
+    // Create task model and dispatch event
+    // Capitalize first letter of priority (medium -> Medium)
+    final priority =
+        _selectedPriority[0].toUpperCase() + _selectedPriority.substring(1);
+
+    final task = TaskModel(
+      title: _titleController.text.trim(),
+      description: _descriptionController.text.trim().isNotEmpty
+          ? _descriptionController.text.trim()
+          : null,
+      priority: priority,
+      category: _categoryController.text.trim().isNotEmpty
+          ? _categoryController.text.trim()
+          : null,
+      dueDate: _selectedDate,
+      status: 'Pending',
+    );
+
+    context.read<TaskBloc>().add(CreateTaskEvent(task));
+    Navigator.pop(context, true);
   }
 
   @override
