@@ -185,7 +185,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                 Text(
                   'Forgot Password',
                   style: TextStyle(
-                    fontSize: 28.sp,
+                    fontSize: 24.sp,
                     fontWeight: FontWeight.bold,
                     color: AppColors.textPrimary,
                   ),
@@ -200,7 +200,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                           : 'Enter the 6-digit code sent to your email'
                       : 'Enter your email to receive a verification code',
                   style: TextStyle(
-                    fontSize: 13.sp,
+                    fontSize: 12.sp,
                     color: AppColors.textSecondary,
                   ),
                 ),
@@ -211,12 +211,12 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                 Text(
                   'Email Address',
                   style: TextStyle(
-                    fontSize: 14.sp,
+                    fontSize: 12.sp,
                     fontWeight: FontWeight.w600,
                     color: AppColors.textPrimary,
                   ),
                 ),
-                SizedBox(height: 1.h),
+                SizedBox(height: 0.7.h),
                 TextFormField(
                   controller: _emailController,
                   keyboardType: TextInputType.emailAddress,
@@ -225,34 +225,34 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                     hintText: 'Enter your email',
                     hintStyle: TextStyle(
                       color: AppColors.textSecondary.withOpacity(0.5),
-                      fontSize: 13.sp,
+                      fontSize: 12.sp,
                     ),
                     filled: true,
                     fillColor:
                         _codeSent ? AppColors.background : AppColors.white,
                     border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(50),
+                      borderRadius: BorderRadius.circular(12.sp),
                       borderSide: BorderSide(
                         color: AppColors.border,
                         width: 1,
                       ),
                     ),
                     enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(50),
+                      borderRadius: BorderRadius.circular(12.sp),
                       borderSide: BorderSide(
                         color: AppColors.border,
                         width: 1,
                       ),
                     ),
                     disabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(50),
+                      borderRadius: BorderRadius.circular(12.sp),
                       borderSide: BorderSide(
                         color: AppColors.border,
                         width: 1,
                       ),
                     ),
                     focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(50),
+                      borderRadius: BorderRadius.circular(12.sp),
                       borderSide: BorderSide(
                         color: AppColors.primary,
                         width: 2,
@@ -260,7 +260,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                     ),
                     contentPadding: EdgeInsets.symmetric(
                       horizontal: 6.w,
-                      vertical: 2.h,
+                      vertical: 1.5.h,
                     ),
                   ),
                 ),
@@ -272,12 +272,12 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                   Text(
                     'Verification Code',
                     style: TextStyle(
-                      fontSize: 14.sp,
+                      fontSize: 12.sp,
                       fontWeight: FontWeight.w600,
                       color: AppColors.textPrimary,
                     ),
                   ),
-                  SizedBox(height: 1.h),
+                  SizedBox(height: 0.7.h),
                   TextFormField(
                     controller: _codeController,
                     keyboardType: TextInputType.number,
@@ -286,27 +286,27 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                       hintText: 'Enter 6-digit code',
                       hintStyle: TextStyle(
                         color: AppColors.textSecondary.withOpacity(0.5),
-                        fontSize: 13.sp,
+                        fontSize: 12.sp,
                       ),
                       filled: true,
                       fillColor: AppColors.white,
                       counterText: '',
                       border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(50),
+                        borderRadius: BorderRadius.circular(12.sp),
                         borderSide: BorderSide(
                           color: AppColors.border,
                           width: 1,
                         ),
                       ),
                       enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(50),
+                        borderRadius: BorderRadius.circular(12.sp),
                         borderSide: BorderSide(
                           color: AppColors.border,
                           width: 1,
                         ),
                       ),
                       focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(50),
+                        borderRadius: BorderRadius.circular(12.sp),
                         borderSide: BorderSide(
                           color: AppColors.primary,
                           width: 2,
@@ -314,12 +314,12 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                       ),
                       contentPadding: EdgeInsets.symmetric(
                         horizontal: 6.w,
-                        vertical: 2.h,
+                        vertical: 1.5.h,
                       ),
                     ),
                   ),
 
-                  SizedBox(height: 1.h),
+                  // SizedBox(height: 0.7.h),
 
                   // Resend Code
                   Align(
@@ -329,7 +329,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                       child: Text(
                         'Resend Code',
                         style: TextStyle(
-                          fontSize: 13.sp,
+                          fontSize: 12.sp,
                           color: AppColors.primary,
                           fontWeight: FontWeight.w600,
                         ),
@@ -339,18 +339,18 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                 ],
 
                 if (_codeVerified) ...[
-                  SizedBox(height: 2.5.h),
+                  SizedBox(height: 2.h),
 
                   // New Password Field
                   Text(
                     'New Password',
                     style: TextStyle(
-                      fontSize: 14.sp,
+                      fontSize: 12.sp,
                       fontWeight: FontWeight.w600,
                       color: AppColors.textPrimary,
                     ),
                   ),
-                  SizedBox(height: 1.h),
+                  SizedBox(height: 0.7.h),
                   TextFormField(
                     controller: _newPasswordController,
                     obscureText: !_isPasswordVisible,
@@ -359,7 +359,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                       hintText: 'Enter new password',
                       hintStyle: TextStyle(
                         color: AppColors.textSecondary.withOpacity(0.5),
-                        fontSize: 13.sp,
+                        fontSize: 12.sp,
                       ),
                       filled: true,
                       fillColor: AppColors.white,
@@ -377,35 +377,35 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                         },
                       ),
                       border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(50),
+                        borderRadius: BorderRadius.circular(12.sp),
                         borderSide: BorderSide(
                           color: AppColors.border,
                           width: 1,
                         ),
                       ),
                       enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(50),
+                        borderRadius: BorderRadius.circular(12.sp),
                         borderSide: BorderSide(
                           color: AppColors.border,
                           width: 1,
                         ),
                       ),
                       focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(50),
+                        borderRadius: BorderRadius.circular(12.sp),
                         borderSide: BorderSide(
                           color: AppColors.primary,
                           width: 2,
                         ),
                       ),
                       errorBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(50),
+                        borderRadius: BorderRadius.circular(12.sp),
                         borderSide: BorderSide(
                           color: AppColors.error,
                           width: 1,
                         ),
                       ),
                       focusedErrorBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(50),
+                        borderRadius: BorderRadius.circular(12.sp),
                         borderSide: BorderSide(
                           color: AppColors.error,
                           width: 2,
@@ -413,7 +413,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                       ),
                       contentPadding: EdgeInsets.symmetric(
                         horizontal: 6.w,
-                        vertical: 2.h,
+                        vertical: 1.5.h,
                       ),
                     ),
                   ),
@@ -424,12 +424,12 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                   Text(
                     'Confirm Password',
                     style: TextStyle(
-                      fontSize: 14.sp,
+                      fontSize: 12.sp,
                       fontWeight: FontWeight.w600,
                       color: AppColors.textPrimary,
                     ),
                   ),
-                  SizedBox(height: 1.h),
+                  SizedBox(height: 0.7.h),
                   TextFormField(
                     controller: _confirmPasswordController,
                     obscureText: !_isConfirmPasswordVisible,
@@ -438,7 +438,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                       hintText: 'Confirm new password',
                       hintStyle: TextStyle(
                         color: AppColors.textSecondary.withOpacity(0.5),
-                        fontSize: 13.sp,
+                        fontSize: 12.sp,
                       ),
                       filled: true,
                       fillColor: AppColors.white,
@@ -457,35 +457,35 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                         },
                       ),
                       border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(50),
+                        borderRadius: BorderRadius.circular(12.sp),
                         borderSide: BorderSide(
                           color: AppColors.border,
                           width: 1,
                         ),
                       ),
                       enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(50),
+                        borderRadius: BorderRadius.circular(12.sp),
                         borderSide: BorderSide(
                           color: AppColors.border,
                           width: 1,
                         ),
                       ),
                       focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(50),
+                        borderRadius: BorderRadius.circular(12.sp),
                         borderSide: BorderSide(
                           color: AppColors.primary,
                           width: 2,
                         ),
                       ),
                       errorBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(50),
+                        borderRadius: BorderRadius.circular(12.sp),
                         borderSide: BorderSide(
                           color: AppColors.error,
                           width: 1,
                         ),
                       ),
                       focusedErrorBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(50),
+                        borderRadius: BorderRadius.circular(12.sp),
                         borderSide: BorderSide(
                           color: AppColors.error,
                           width: 2,
@@ -493,7 +493,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                       ),
                       contentPadding: EdgeInsets.symmetric(
                         horizontal: 6.w,
-                        vertical: 2.h,
+                        vertical: 1.5.h,
                       ),
                     ),
                   ),
@@ -504,7 +504,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                 // Action Button
                 SizedBox(
                   width: double.infinity,
-                  height: 6.h,
+                  height: 6.5.h,
                   child: ElevatedButton(
                     onPressed: _isLoading
                         ? null
@@ -518,7 +518,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                       foregroundColor: AppColors.white,
                       elevation: 0,
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(50),
+                        borderRadius: BorderRadius.circular(12.sp),
                       ),
                       disabledBackgroundColor:
                           AppColors.primary.withOpacity(0.6),
@@ -541,7 +541,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                                     ? 'Verify Code'
                                     : 'Send Code',
                             style: TextStyle(
-                              fontSize: 15.sp,
+                              fontSize: 14.sp,
                               fontWeight: FontWeight.bold,
                             ),
                           ),

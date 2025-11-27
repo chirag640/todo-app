@@ -74,18 +74,33 @@ class _SplashPageState extends State<SplashPage>
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      // App Logo
+                      // App Logo with Gradient
                       Container(
                         width: 28.w,
                         height: 28.w,
                         decoration: BoxDecoration(
-                          color: AppColors.textPrimary,
-                          borderRadius: BorderRadius.circular(24),
+                          gradient: LinearGradient(
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                            colors: [
+                              AppColors.primary,
+                              AppColors.primaryDark,
+                            ],
+                          ),
+                          borderRadius: BorderRadius.circular(20),
+                          boxShadow: [
+                            BoxShadow(
+                              color: AppColors.primary.withOpacity(0.4),
+                              blurRadius: 24,
+                              offset: Offset(0, 12),
+                              spreadRadius: 0,
+                            ),
+                          ],
                         ),
                         child: Center(
                           child: Icon(
-                            Icons.check_circle_outline_rounded,
-                            size: 18.w,
+                            Icons.check_circle_rounded,
+                            size: 16.w,
                             color: AppColors.white,
                           ),
                         ),
@@ -96,10 +111,10 @@ class _SplashPageState extends State<SplashPage>
                       Text(
                         'Todo',
                         style: TextStyle(
-                          fontSize: 32.sp,
+                          fontSize: 34.sp,
                           fontWeight: FontWeight.bold,
                           color: AppColors.textPrimary,
-                          letterSpacing: -0.5,
+                          letterSpacing: 0.5,
                         ),
                       ),
                       SizedBox(height: 1.h),
