@@ -24,9 +24,10 @@ class EnvLoader {
 
   static String get apiBaseUrl {
     if (_isLoaded) {
-      return dotenv.maybeGet('API_BASE_URL') ?? 'http://192.168.0.208:3000/api';
+      return dotenv.maybeGet('API_BASE_URL') ??
+          'https://todo-app-backend-csaa.vercel.app/api';
     }
-    // Default using actual IP address (change this to your computer's IP if different)
-    return 'http://192.168.0.208:3000/api';
+    // Production Vercel backend
+    return 'https://todo-app-backend-csaa.vercel.app/api';
   }
 }
